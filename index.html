@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>💥 GROK BOOM CALC 💥</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
@@ -11,424 +11,258 @@
   
   .calc-btn {
     position: relative; overflow: hidden;
-    transition: transform 0.1s cubic-bezier(0.23,1,0.32,1), box-shadow 0.1s;
+    transition: transform 0.1s cubic-bezier(0.23,1,0.32,1);
   }
-  .calc-btn:active { transform: scale(0.85) !important; }
+  .calc-btn:active { transform: scale(0.88) !important; }
   
   .ripple {
     position: absolute; border-radius: 50%;
-    background: rgba(255,215,0,0.7);
-    animation: ripple-boom 0.6s linear forwards;
+    background: rgba(251, 191, 36, 0.7);
+    animation: ripple-boom 0.55s linear forwards;
     pointer-events: none;
   }
-  @keyframes ripple-boom {
-    to { transform: scale(5); opacity: 0; }
-  }
+  @keyframes ripple-boom { to { transform: scale(4.5); opacity: 0; } }
   
-  .big-flash {
-    animation: big-flash-anim 0.4s ease;
-  }
+  .big-flash { animation: big-flash-anim 0.45s ease; }
   @keyframes big-flash-anim {
     0% { filter: brightness(1); }
-    20% { filter: brightness(3) saturate(2); }
+    30% { filter: brightness(3.5) saturate(2.5); }
     100% { filter: brightness(1); }
   }
   
   .earthquake {
-    animation: earthquake-anim 0.6s ease;
+    animation: earthquake-anim 0.55s ease;
   }
   @keyframes earthquake-anim {
     0%,100% { transform: translate(0,0); }
-    10% { transform: translate(-12px, -6px); }
-    20% { transform: translate(12px, 8px); }
-    30% { transform: translate(-10px, 4px); }
-    40% { transform: translate(10px, -8px); }
-    50% { transform: translate(-8px, 6px); }
-    60% { transform: translate(8px, -4px); }
-    70% { transform: translate(-6px, 4px); }
-    80% { transform: translate(6px, -2px); }
-    90% { transform: translate(-2px, 2px); }
+    10% { transform: translate(-8px, -4px); }
+    20% { transform: translate(8px, 5px); }
+    30% { transform: translate(-7px, 3px); }
+    40% { transform: translate(7px, -5px); }
+    50% { transform: translate(-5px, 3px); }
+    60% { transform: translate(5px, -3px); }
   }
 </style>
 </head>
-<body class="bg-zinc-950 flex items-center justify-center min-h-screen p-4 overflow-hidden">
-  <div id="main-container" class="w-full max-w-[400px]">
-    <div class="flex items-center gap-3 mb-4 px-2">
-      <div class="text-5xl">💥</div>
+<body class="bg-zinc-950 flex items-center justify-center min-h-screen p-3">
+  <div id="main-container" class="w-full max-w-[360px]">
+    <div class="flex items-center gap-2 mb-3 px-1">
+      <div class="text-4xl">💥</div>
       <div>
-        <h1 class="text-4xl font-black tracking-[-2px] text-white">GROK</h1>
-        <h2 class="text-2xl font-bold tracking-tighter bg-gradient-to-r from-amber-400 to-yellow-500 bg-clip-text text-transparent -mt-2">BOOM CALC</h2>
+        <h1 class="text-3xl font-black tracking-tighter text-white">GROK</h1>
+        <h2 class="text-xl font-bold tracking-[-1px] bg-gradient-to-r from-amber-400 to-yellow-500 bg-clip-text text-transparent -mt-1">BOOM CALC</h2>
       </div>
     </div>
 
-    <div class="relative bg-zinc-900/95 backdrop-blur-2xl border border-amber-500/30 rounded-3xl p-7 shadow-[0_0_60px_rgba(245,158,11,0.15)]">
-      <!-- 超派手パーティクル -->
+    <div class="relative bg-zinc-900/95 backdrop-blur-2xl border border-amber-500/30 rounded-3xl p-5 shadow-2xl">
       <canvas id="particles" class="absolute inset-0 rounded-3xl pointer-events-none z-0"></canvas>
       
-      <!-- ディスプレイ -->
       <div id="display" 
-           class="display relative z-10 h-32 flex items-end justify-end px-8 text-right text-[64px] font-black tracking-[-4px] bg-black/70 rounded-3xl border border-amber-500/20 mb-8 text-white overflow-hidden shadow-inner">
+           class="display relative z-10 h-24 flex items-end justify-end px-6 text-right text-5xl font-black tracking-[-3px] bg-black/70 rounded-2xl border border-amber-500/20 mb-6 text-white">
         0
       </div>
 
-      <!-- ボタン群 -->
-      <div class="relative z-10 grid grid-cols-4 gap-4">
-        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 active:bg-zinc-600 text-zinc-200 text-2xl py-7 rounded-2xl font-semibold" data-action="clear">AC</button>
-        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 active:bg-zinc-600 text-zinc-200 text-2xl py-7 rounded-2xl font-semibold" data-action="sign">±</button>
-        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 active:bg-zinc-600 text-zinc-200 text-2xl py-7 rounded-2xl font-semibold" data-action="percent">%</button>
-        <button class="calc-btn bg-orange-950 hover:bg-orange-900 text-orange-400 text-4xl py-7 rounded-2xl font-light" data-operator="/">÷</button>
+      <div class="relative z-10 grid grid-cols-4 gap-3">
+        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xl py-5 rounded-2xl" data-action="clear">AC</button>
+        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xl py-5 rounded-2xl" data-action="sign">±</button>
+        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xl py-5 rounded-2xl" data-action="percent">%</button>
+        <button class="calc-btn bg-orange-950 hover:bg-orange-900 text-orange-400 text-3xl py-5 rounded-2xl" data-operator="/">÷</button>
 
-        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 active:bg-zinc-600 text-white text-4xl py-7 rounded-2xl" data-value="7">7</button>
-        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 active:bg-zinc-600 text-white text-4xl py-7 rounded-2xl" data-value="8">8</button>
-        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 active:bg-zinc-600 text-white text-4xl py-7 rounded-2xl" data-value="9">9</button>
-        <button class="calc-btn bg-orange-950 hover:bg-orange-900 text-orange-400 text-4xl py-7 rounded-2xl font-light" data-operator="*">×</button>
+        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 text-white text-3xl py-5 rounded-2xl" data-value="7">7</button>
+        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 text-white text-3xl py-5 rounded-2xl" data-value="8">8</button>
+        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 text-white text-3xl py-5 rounded-2xl" data-value="9">9</button>
+        <button class="calc-btn bg-orange-950 hover:bg-orange-900 text-orange-400 text-3xl py-5 rounded-2xl" data-operator="*">×</button>
 
-        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 active:bg-zinc-600 text-white text-4xl py-7 rounded-2xl" data-value="4">4</button>
-        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 active:bg-zinc-600 text-white text-4xl py-7 rounded-2xl" data-value="5">5</button>
-        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 active:bg-zinc-600 text-white text-4xl py-7 rounded-2xl" data-value="6">6</button>
-        <button class="calc-btn bg-orange-950 hover:bg-orange-900 text-orange-400 text-4xl py-7 rounded-2xl font-light" data-operator="-">−</button>
+        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 text-white text-3xl py-5 rounded-2xl" data-value="4">4</button>
+        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 text-white text-3xl py-5 rounded-2xl" data-value="5">5</button>
+        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 text-white text-3xl py-5 rounded-2xl" data-value="6">6</button>
+        <button class="calc-btn bg-orange-950 hover:bg-orange-900 text-orange-400 text-3xl py-5 rounded-2xl" data-operator="-">−</button>
 
-        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 active:bg-zinc-600 text-white text-4xl py-7 rounded-2xl" data-value="1">1</button>
-        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 active:bg-zinc-600 text-white text-4xl py-7 rounded-2xl" data-value="2">2</button>
-        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 active:bg-zinc-600 text-white text-4xl py-7 rounded-2xl" data-value="3">3</button>
-        <button class="calc-btn bg-orange-950 hover:bg-orange-900 text-orange-400 text-4xl py-7 rounded-2xl font-light" data-operator="+">+</button>
+        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 text-white text-3xl py-5 rounded-2xl" data-value="1">1</button>
+        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 text-white text-3xl py-5 rounded-2xl" data-value="2">2</button>
+        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 text-white text-3xl py-5 rounded-2xl" data-value="3">3</button>
+        <button class="calc-btn bg-orange-950 hover:bg-orange-900 text-orange-400 text-3xl py-5 rounded-2xl" data-operator="+">+</button>
 
-        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 active:bg-zinc-600 text-white text-4xl py-7 rounded-2xl col-span-2" data-value="0">0</button>
-        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 active:bg-zinc-600 text-white text-4xl py-7 rounded-2xl" data-value=".">.</button>
-        <button class="calc-btn bg-gradient-to-br from-yellow-400 via-amber-400 to-orange-500 hover:from-yellow-300 text-zinc-950 text-5xl font-black py-7 rounded-2xl shadow-[0_10px_30px_rgb(245,158,11)]" data-action="equals">=</button>
+        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 text-white text-3xl py-5 rounded-2xl col-span-2" data-value="0">0</button>
+        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 text-white text-3xl py-5 rounded-2xl" data-value=".">.</button>
+        <button class="calc-btn bg-gradient-to-br from-amber-400 to-yellow-500 text-zinc-950 text-4xl font-black py-5 rounded-2xl shadow-lg" data-action="equals">=</button>
       </div>
     </div>
-    
-    <p class="text-center text-xs text-amber-400/60 mt-4 tracking-[3px]">REALITY IGNORED • MAXIMUM BOOM</p>
   </div>
 
 <script>
-// ==================== 超どかーん パーティクルシステム ====================
+// パーティクル
 let canvas, ctx, particles = [];
-
 function initParticles() {
   canvas = document.getElementById('particles');
   ctx = canvas.getContext('2d');
-  
-  function resize() {
-    canvas.width = canvas.offsetWidth;
-    canvas.height = canvas.offsetHeight;
-  }
+  const resize = () => { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; };
   resize();
   window.addEventListener('resize', resize);
-
-  // 背景常時パーティクル（増量）
-  particles = [];
-  for (let i = 0; i < 45; i++) {
-    particles.push(createParticle(
-      Math.random() * canvas.width,
-      Math.random() * canvas.height,
-      (Math.random() - 0.5) * 0.6,
-      (Math.random() - 0.5) * 0.6,
-      Math.random() * 2.5 + 1,
-      180 + Math.random() * 150,
-      '#fcd34d'
-    ));
+  
+  for (let i = 0; i < 35; i++) {
+    particles.push(createParticle(Math.random()*canvas.width, Math.random()*canvas.height, (Math.random()-0.5)*0.5, (Math.random()-0.5)*0.5, Math.random()*2+1, 200, '#fcd34d'));
   }
 }
-
-function createParticle(x, y, vx, vy, size, life, color) {
-  return { x, y, vx, vy, size, life, maxLife: life, color, gravity: 0.02 };
+function createParticle(x,y,vx,vy,size,life,color) {
+  return {x,y,vx,vy,size,life,maxLife:life,color,gravity:0.03};
 }
-
-function createExplosion(x, y, count = 60, speed = 5, color = '#fcd34d') {
+function createExplosion(x, y, count=45, speed=6) {
   for (let i = 0; i < count; i++) {
     const angle = Math.random() * Math.PI * 2;
     const vel = Math.random() * speed + 2;
-    const p = createParticle(
-      x + (Math.random() - 0.5) * 15,
-      y + (Math.random() - 0.5) * 15,
-      Math.cos(angle) * vel,
-      Math.sin(angle) * vel - 1.5,
-      Math.random() * 4 + 1.5,
-      35 + Math.random() * 25,
-      (Math.random() > 0.7) ? '#fef08c' : color
-    );
-    p.gravity = 0.08;
-    particles.push(p);
-  }
-}
-
-function updateParticles() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  
-  for (let i = particles.length - 1; i >= 0; i--) {
-    const p = particles[i];
-    p.x += p.vx;
-    p.y += p.vy;
-    p.vy += p.gravity || 0.02;
-    p.life--;
-    
-    if (p.life <= 0) {
-      particles.splice(i, 1);
-      continue;
-    }
-    
-    const alpha = p.life / p.maxLife;
-    ctx.globalAlpha = alpha * 0.9;
-    ctx.fillStyle = p.color;
-    ctx.shadowBlur = 15;
-    ctx.shadowColor = p.color;
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-    ctx.fill();
-  }
-  ctx.globalAlpha = 1;
-  ctx.shadowBlur = 0;
-  
-  // 背景パーティクル補充
-  if (particles.length < 50 && Math.random() < 0.4) {
     particles.push(createParticle(
-      Math.random() * canvas.width,
-      Math.random() * canvas.height * 0.6,
-      (Math.random() - 0.5) * 0.5,
-      (Math.random() - 0.5) * 0.5,
-      Math.random() * 2 + 0.8,
-      160,
-      '#fcd34d'
+      x, y,
+      Math.cos(angle)*vel,
+      Math.sin(angle)*vel - 2,
+      Math.random()*3.5 + 1.5,
+      38 + Math.random()*22,
+      Math.random() > 0.6 ? '#fef08c' : '#fcd34d'
     ));
   }
-  
+}
+function updateParticles() {
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  for (let i = particles.length-1; i >= 0; i--) {
+    const p = particles[i];
+    p.x += p.vx; p.y += p.vy; p.vy += p.gravity;
+    p.life--;
+    if (p.life <= 0) { particles.splice(i,1); continue; }
+    const a = p.life / p.maxLife;
+    ctx.globalAlpha = a * 0.95;
+    ctx.fillStyle = p.color;
+    ctx.shadowBlur = 12; ctx.shadowColor = p.color;
+    ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI*2); ctx.fill();
+  }
+  ctx.globalAlpha = 1; ctx.shadowBlur = 0;
   requestAnimationFrame(updateParticles);
 }
 
-// ==================== 画面どかーん シェイク ====================
+// シェイク
 function bigBoomShake() {
-  const container = document.getElementById('main-container');
-  container.classList.add('earthquake');
-  setTimeout(() => container.classList.remove('earthquake'), 650);
-  
-  // 画面全体フラッシュ
-  const flash = document.createElement('div');
-  flash.style.cssText = 'position:fixed;inset:0;background:rgba(245,158,11,0.25);pointer-events:none;z-index:9999;';
-  document.body.appendChild(flash);
-  setTimeout(() => flash.style.transition = 'opacity 0.3s', 50);
-  setTimeout(() => {
-    flash.style.opacity = '0';
-    setTimeout(() => flash.remove(), 300);
-  }, 150);
+  const c = document.getElementById('main-container');
+  c.classList.add('earthquake');
+  setTimeout(() => c.classList.remove('earthquake'), 600);
 }
 
-// ==================== 電卓ロジック（実用性は最低限） ====================
-let displayValue = '0';
-let firstOperand = null;
-let waitingForSecondOperand = false;
-let currentOperator = null;
-const displayEl = document.getElementById('display');
+// ロジック
+let displayValue = '0', firstOperand = null, waitingForSecondOperand = false, currentOperator = null;
+const display = document.getElementById('display');
+function updateDisplay() { display.textContent = displayValue; }
 
-function updateDisplay() {
-  displayEl.textContent = displayValue;
-}
-
-function inputDigit(digit) {
-  if (waitingForSecondOperand) {
-    displayValue = digit;
-    waitingForSecondOperand = false;
-  } else {
-    displayValue = displayValue === '0' ? digit : displayValue + digit;
-  }
+function inputDigit(d) {
+  if (waitingForSecondOperand) { displayValue = d; waitingForSecondOperand = false; }
+  else displayValue = displayValue === '0' ? d : displayValue + d;
   updateDisplay();
 }
-
 function inputDecimal() {
-  if (waitingForSecondOperand) {
-    displayValue = '0.';
-    waitingForSecondOperand = false;
-  } else if (!displayValue.includes('.')) {
-    displayValue += '.';
-  }
+  if (waitingForSecondOperand) displayValue = '0.';
+  else if (!displayValue.includes('.')) displayValue += '.';
+  waitingForSecondOperand = false;
   updateDisplay();
 }
-
 function handleOperator(op) {
   const val = parseFloat(displayValue);
-  if (currentOperator && waitingForSecondOperand) {
-    currentOperator = op;
-    return;
-  }
-  if (firstOperand === null) {
-    firstOperand = val;
-  } else if (currentOperator) {
-    const res = calculate(firstOperand, val, currentOperator);
+  if (currentOperator && waitingForSecondOperand) { currentOperator = op; return; }
+  if (firstOperand === null) firstOperand = val;
+  else if (currentOperator) {
+    const res = calc(firstOperand, val, currentOperator);
     displayValue = res === 'Error' ? 'Error' : parseFloat(res.toFixed(7)).toString();
     firstOperand = res === 'Error' ? null : res;
     updateDisplay();
   }
-  waitingForSecondOperand = true;
-  currentOperator = op;
+  waitingForSecondOperand = true; currentOperator = op;
 }
-
-function calculate(a, b, op) {
-  if (op === '+') return a + b;
-  if (op === '-') return a - b;
-  if (op === '*') return a * b;
-  if (op === '/') return b === 0 ? 'Error' : a / b;
+function calc(a,b,op) {
+  switch(op){
+    case '+': return a+b;
+    case '-': return a-b;
+    case '*': return a*b;
+    case '/': return b===0 ? 'Error' : a/b;
+  }
   return b;
 }
-
 function handleEquals() {
   if (!currentOperator || waitingForSecondOperand) return;
-  
   const val = parseFloat(displayValue);
-  let result = calculate(firstOperand, val, currentOperator);
-  
-  if (result === 'Error') {
+  let res = calc(firstOperand, val, currentOperator);
+  if (res === 'Error') {
     displayValue = 'Error';
   } else {
-    displayValue = parseFloat(result.toFixed(7)).toString();
-    // ★★★ 最大級どかーん！ ★★★
-    const rect = displayEl.getBoundingClientRect();
-    createExplosion(rect.left + rect.width/2, rect.top + rect.height/2, 120, 9, '#fef08c');
-    createExplosion(rect.left + rect.width/2, rect.top + rect.height/2, 80, 6, '#f59e0b');
+    displayValue = parseFloat(res.toFixed(7)).toString();
+    // 大爆発
+    const r = display.getBoundingClientRect();
+    const centerX = r.left + r.width/2;
+    const centerY = r.top + r.height/2;
+    createExplosion(centerX, centerY, 110, 8.5);
+    createExplosion(centerX, centerY, 70, 5, '#f59e0b');
     bigBoomShake();
-    displayEl.classList.add('big-flash');
-    setTimeout(() => displayEl.classList.remove('big-flash'), 450);
+    display.classList.add('big-flash');
+    setTimeout(() => display.classList.remove('big-flash'), 400);
   }
-  
-  firstOperand = null;
-  currentOperator = null;
-  waitingForSecondOperand = true;
+  firstOperand = null; currentOperator = null; waitingForSecondOperand = true;
   updateDisplay();
 }
-
-function resetCalc() {
-  displayValue = '0';
-  firstOperand = null;
-  waitingForSecondOperand = false;
-  currentOperator = null;
-  updateDisplay();
-}
-
+function resetCalc() { displayValue = '0'; firstOperand = null; waitingForSecondOperand = false; currentOperator = null; updateDisplay(); }
 function toggleSign() {
-  if (displayValue !== '0' && displayValue !== 'Error') {
-    displayValue = displayValue.startsWith('-') ? displayValue.slice(1) : '-' + displayValue;
-    updateDisplay();
-  }
-}
-
-function percent() {
-  displayValue = (parseFloat(displayValue) / 100).toString();
+  if (displayValue !== '0' && displayValue !== 'Error') displayValue = displayValue.startsWith('-') ? displayValue.slice(1) : '-' + displayValue;
   updateDisplay();
 }
+function percent() { displayValue = (parseFloat(displayValue)/100).toString(); updateDisplay(); }
 
-// ==================== 爆発エフェクト付きボタン処理 ====================
+// ボタン
 function setupButtons() {
   document.querySelectorAll('.calc-btn').forEach(btn => {
-    btn.addEventListener('click', e => {
+    const handler = (e) => {
+      // 爆発
+      const r = btn.getBoundingClientRect();
+      createExplosion(r.left + r.width/2, r.top + r.height/2, 28, 4.5);
+      
       // リップル
       const ripple = document.createElement('span');
       ripple.classList.add('ripple');
-      const rect = btn.getBoundingClientRect();
-      const size = Math.max(rect.width, rect.height) * 1.2;
-      ripple.style.width = ripple.style.height = size + 'px';
-      ripple.style.left = (e.clientX - rect.left - size/2) + 'px';
-      ripple.style.top = (e.clientY - rect.top - size/2) + 'px';
+      const size = Math.max(r.width, r.height) * 1.3;
+      ripple.style.width = ripple.style.height = `${size}px`;
+      ripple.style.left = `${e.clientX - r.left - size/2}px`;
+      ripple.style.top = `${e.clientY - r.top - size/2}px`;
       btn.appendChild(ripple);
-      setTimeout(() => ripple.remove(), 700);
+      setTimeout(() => ripple.remove(), 600);
       
-      // ボタン位置で小爆発
-      const btnRect = btn.getBoundingClientRect();
-      createExplosion(
-        btnRect.left + btnRect.width/2, 
-        btnRect.top + btnRect.height/2, 
-        35, 4.5
-      );
-      
-      // 音
-      playBoomSound(btn.dataset.action === 'equals');
-      
-      // アクション
+      // 処理
       if (btn.dataset.value) {
         if (btn.dataset.value === '.') inputDecimal();
         else inputDigit(btn.dataset.value);
-      } else if (btn.dataset.operator) {
-        handleOperator(btn.dataset.operator);
-      } else if (btn.dataset.action) {
-        const act = btn.dataset.action;
-        if (act === 'clear') resetCalc();
-        if (act === 'sign') toggleSign();
-        if (act === 'percent') percent();
-        if (act === 'equals') handleEquals();
+      } else if (btn.dataset.operator) handleOperator(btn.dataset.operator);
+      else if (btn.dataset.action) {
+        const a = btn.dataset.action;
+        if (a==='clear') resetCalc();
+        if (a==='sign') toggleSign();
+        if (a==='percent') percent();
+        if (a==='equals') handleEquals();
+      }
+    };
+    btn.addEventListener('click', handler);
+    btn.addEventListener('touchend', (e) => {
+      if (e.changedTouches.length > 0) {
+        const touch = e.changedTouches[0];
+        handler({clientX: touch.clientX, clientY: touch.clientY, currentTarget: btn});
       }
     });
   });
 }
 
-// ==================== 爆発音 ====================
-function playBoomSound(isBig = false) {
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    // 低音ドーン
-    const osc1 = ctx.createOscillator();
-    const gain1 = ctx.createGain();
-    osc1.type = 'sawtooth';
-    osc1.frequency.value = isBig ? 45 : 80;
-    gain1.gain.value = isBig ? 0.6 : 0.35;
-    
-    // 高音キラキラ
-    const osc2 = ctx.createOscillator();
-    const gain2 = ctx.createGain();
-    osc2.type = 'sine';
-    osc2.frequency.value = isBig ? 1200 : 850;
-    gain2.gain.value = isBig ? 0.25 : 0.12;
-    
-    const filter = ctx.createBiquadFilter();
-    filter.type = 'lowpass';
-    filter.frequency.value = 1800;
-    
-    osc1.connect(filter);
-    osc2.connect(filter);
-    filter.connect(gain1);
-    filter.connect(gain2);
-    gain1.connect(ctx.destination);
-    gain2.connect(ctx.destination);
-    
-    osc1.start();
-    osc2.start();
-    
-    const dur = isBig ? 0.55 : 0.18;
-    gain1.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
-    gain2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur * 0.7);
-    
-    setTimeout(() => {
-      osc1.stop();
-      osc2.stop();
-    }, dur * 1000 + 100);
-  } catch(e) {}
-}
-
-// キーボード対応（簡易）
-function setupKeyboard() {
-  document.addEventListener('keydown', e => {
-    if (e.key >= '0' && e.key <= '9') inputDigit(e.key);
-    if (e.key === '.') inputDecimal();
-    if (['+','-','*','/'].includes(e.key)) handleOperator(e.key);
-    if (e.key === 'Enter' || e.key === '=') handleEquals();
-    if (e.key.toLowerCase() === 'c') resetCalc();
-  });
-}
-
-// ==================== 起動 ====================
 function init() {
   initParticles();
   updateParticles();
   setupButtons();
-  setupKeyboard();
   updateDisplay();
   
-  // 起動時にもちょっとどかーん
+  // 起動爆発
   setTimeout(() => {
-    const disp = document.getElementById('display');
-    const r = disp.getBoundingClientRect();
-    createExplosion(r.left + r.width/2, r.top + r.height/2, 50, 3);
-  }, 800);
+    const r = display.getBoundingClientRect();
+    createExplosion(r.left + r.width/2, r.top + r.height/2, 40, 3);
+  }, 400);
 }
-
 init();
 </script>
 </body>
