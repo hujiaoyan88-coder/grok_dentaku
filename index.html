@@ -11,28 +11,32 @@
   
   .calc-btn {
     position: relative; overflow: hidden;
-    transition: transform 0.1s cubic-bezier(0.23,1,0.32,1);
+    transition: all 0.1s cubic-bezier(0.23,1,0.32,1);
+    backdrop-filter: blur(12px);
   }
-  .calc-btn:active { transform: scale(0.88) !important; }
+  .calc-btn:active {
+    transform: scale(0.88);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 0 25px rgba(103, 232, 249, 0.6);
+  }
   
   .ripple {
     position: absolute; border-radius: 50%;
-    background: rgba(103, 232, 249, 0.7);
+    background: rgba(103, 232, 249, 0.75);
     animation: ripple-boom 0.55s linear forwards;
     pointer-events: none;
+    z-index: 40;
   }
-  @keyframes ripple-boom { to { transform: scale(4.5); opacity: 0; } }
+  @keyframes ripple-boom { to { transform: scale(4.8); opacity: 0; } }
   
   .big-flash { animation: big-flash-anim 0.45s ease; }
   @keyframes big-flash-anim {
     0% { filter: brightness(1); }
-    30% { filter: brightness(3.5) saturate(2.5); }
+    30% { filter: brightness(3.8) saturate(2.8); }
     100% { filter: brightness(1); }
   }
   
-  .earthquake {
-    animation: earthquake-anim 0.55s ease;
-  }
+  .earthquake { animation: earthquake-anim 0.55s ease; }
   @keyframes earthquake-anim {
     0%,100% { transform: translate(0,0); }
     10% { transform: translate(-8px, -4px); }
@@ -50,49 +54,49 @@
       <div class="text-4xl">💥</div>
       <div>
         <h1 class="text-3xl font-black tracking-tighter text-white">GROK</h1>
-        <h2 class="text-xl font-bold tracking-[-1px] bg-gradient-to-r from-cyan-400 to-sky-400 bg-clip-text text-transparent -mt-1">BOOM CALC</h2>
+        <h2 class="text-xl font-bold tracking-[-1px] bg-gradient-to-r from-cyan-300 to-sky-400 bg-clip-text text-transparent -mt-1">BOOM CALC</h2>
       </div>
     </div>
 
-    <div class="relative bg-zinc-900/95 backdrop-blur-2xl border border-cyan-400/40 rounded-3xl p-5 shadow-2xl">
+    <div class="relative bg-zinc-900/90 backdrop-blur-2xl border border-cyan-400/40 rounded-3xl p-5 shadow-2xl">
       <!-- 最前面パーティクル -->
-      <canvas id="particles" class="absolute inset-0 rounded-3xl pointer-events-none z-30"></canvas>
+      <canvas id="particles" class="absolute inset-0 rounded-3xl pointer-events-none z-50"></canvas>
       
       <div id="display" 
-           class="display relative z-10 h-24 flex items-end justify-end px-6 text-right text-5xl font-black tracking-[-3px] bg-black/70 rounded-2xl border border-cyan-400/30 mb-6 text-white">
+           class="display relative z-10 h-24 flex items-end justify-end px-6 text-right text-5xl font-black tracking-[-3px] bg-black/60 backdrop-blur-xl rounded-2xl border border-cyan-400/30 mb-6 text-white">
         0
       </div>
 
       <div class="relative z-20 grid grid-cols-4 gap-3">
-        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xl py-5 rounded-2xl" data-action="clear">AC</button>
-        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xl py-5 rounded-2xl" data-action="sign">±</button>
-        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xl py-5 rounded-2xl" data-action="percent">%</button>
-        <button class="calc-btn bg-cyan-950 hover:bg-cyan-900 text-cyan-400 text-3xl py-5 rounded-2xl" data-operator="/">÷</button>
+        <button class="calc-btn bg-zinc-800/80 hover:bg-zinc-700/80 text-zinc-200 text-xl py-5 rounded-2xl border border-white/10" data-action="clear">AC</button>
+        <button class="calc-btn bg-zinc-800/80 hover:bg-zinc-700/80 text-zinc-200 text-xl py-5 rounded-2xl border border-white/10" data-action="sign">±</button>
+        <button class="calc-btn bg-zinc-800/80 hover:bg-zinc-700/80 text-zinc-200 text-xl py-5 rounded-2xl border border-white/10" data-action="percent">%</button>
+        <button class="calc-btn bg-cyan-950/70 hover:bg-cyan-900/70 text-cyan-300 text-3xl py-5 rounded-2xl border border-cyan-400/30" data-operator="/">÷</button>
 
-        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 text-white text-3xl py-5 rounded-2xl" data-value="7">7</button>
-        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 text-white text-3xl py-5 rounded-2xl" data-value="8">8</button>
-        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 text-white text-3xl py-5 rounded-2xl" data-value="9">9</button>
-        <button class="calc-btn bg-cyan-950 hover:bg-cyan-900 text-cyan-400 text-3xl py-5 rounded-2xl" data-operator="*">×</button>
+        <button class="calc-btn bg-zinc-800/80 hover:bg-zinc-700/80 text-white text-3xl py-5 rounded-2xl border border-white/10" data-value="7">7</button>
+        <button class="calc-btn bg-zinc-800/80 hover:bg-zinc-700/80 text-white text-3xl py-5 rounded-2xl border border-white/10" data-value="8">8</button>
+        <button class="calc-btn bg-zinc-800/80 hover:bg-zinc-700/80 text-white text-3xl py-5 rounded-2xl border border-white/10" data-value="9">9</button>
+        <button class="calc-btn bg-cyan-950/70 hover:bg-cyan-900/70 text-cyan-300 text-3xl py-5 rounded-2xl border border-cyan-400/30" data-operator="*">×</button>
 
-        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 text-white text-3xl py-5 rounded-2xl" data-value="4">4</button>
-        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 text-white text-3xl py-5 rounded-2xl" data-value="5">5</button>
-        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 text-white text-3xl py-5 rounded-2xl" data-value="6">6</button>
-        <button class="calc-btn bg-cyan-950 hover:bg-cyan-900 text-cyan-400 text-3xl py-5 rounded-2xl" data-operator="-">−</button>
+        <button class="calc-btn bg-zinc-800/80 hover:bg-zinc-700/80 text-white text-3xl py-5 rounded-2xl border border-white/10" data-value="4">4</button>
+        <button class="calc-btn bg-zinc-800/80 hover:bg-zinc-700/80 text-white text-3xl py-5 rounded-2xl border border-white/10" data-value="5">5</button>
+        <button class="calc-btn bg-zinc-800/80 hover:bg-zinc-700/80 text-white text-3xl py-5 rounded-2xl border border-white/10" data-value="6">6</button>
+        <button class="calc-btn bg-cyan-950/70 hover:bg-cyan-900/70 text-cyan-300 text-3xl py-5 rounded-2xl border border-cyan-400/30" data-operator="-">−</button>
 
-        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 text-white text-3xl py-5 rounded-2xl" data-value="1">1</button>
-        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 text-white text-3xl py-5 rounded-2xl" data-value="2">2</button>
-        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 text-white text-3xl py-5 rounded-2xl" data-value="3">3</button>
-        <button class="calc-btn bg-cyan-950 hover:bg-cyan-900 text-cyan-400 text-3xl py-5 rounded-2xl" data-operator="+">+</button>
+        <button class="calc-btn bg-zinc-800/80 hover:bg-zinc-700/80 text-white text-3xl py-5 rounded-2xl border border-white/10" data-value="1">1</button>
+        <button class="calc-btn bg-zinc-800/80 hover:bg-zinc-700/80 text-white text-3xl py-5 rounded-2xl border border-white/10" data-value="2">2</button>
+        <button class="calc-btn bg-zinc-800/80 hover:bg-zinc-700/80 text-white text-3xl py-5 rounded-2xl border border-white/10" data-value="3">3</button>
+        <button class="calc-btn bg-cyan-950/70 hover:bg-cyan-900/70 text-cyan-300 text-3xl py-5 rounded-2xl border border-cyan-400/30" data-operator="+">+</button>
 
-        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 text-white text-3xl py-5 rounded-2xl col-span-2" data-value="0">0</button>
-        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 text-white text-3xl py-5 rounded-2xl" data-value=".">.</button>
-        <button class="calc-btn bg-gradient-to-br from-cyan-400 to-sky-400 text-zinc-950 text-4xl font-black py-5 rounded-2xl shadow-lg" data-action="equals">=</button>
+        <button class="calc-btn bg-zinc-800/80 hover:bg-zinc-700/80 text-white text-3xl py-5 rounded-2xl border border-white/10 col-span-2" data-value="0">0</button>
+        <button class="calc-btn bg-zinc-800/80 hover:bg-zinc-700/80 text-white text-3xl py-5 rounded-2xl border border-white/10" data-value=".">.</button>
+        <button class="calc-btn bg-gradient-to-br from-cyan-400 to-sky-400 text-zinc-950 text-4xl font-black py-5 rounded-2xl shadow-[0_0_25px_#67e8f9] border border-cyan-300" data-action="equals">=</button>
       </div>
     </div>
   </div>
 
 <script>
-// パーティクル（z-30で最前面）
+// パーティクル（z-50で最前面）
 let canvas, ctx, particles = [];
 function initParticles() {
   canvas = document.getElementById('particles');
@@ -136,7 +140,7 @@ function bigBoomShake() {
   setTimeout(() => c.classList.remove('earthquake'), 600);
 }
 
-// ロジック（省略せずそのまま）
+// ロジック（前回と同じ）
 let displayValue = '0', firstOperand = null, waitingForSecondOperand = false, currentOperator = null;
 const display = document.getElementById('display');
 function updateDisplay() { display.textContent = displayValue; }
@@ -195,7 +199,7 @@ function toggleSign() {
 }
 function percent() { displayValue = (parseFloat(displayValue)/100).toString(); updateDisplay(); }
 
-// ボタン（clickのみに統一）
+// ボタン
 function setupButtons() {
   document.querySelectorAll('.calc-btn').forEach(btn => {
     btn.addEventListener('click', e => {
