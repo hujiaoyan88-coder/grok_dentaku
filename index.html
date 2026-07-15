@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Grok Luxe Calculator</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Space+Grotesk:wght@500;600&display=swap');
+  
+  body { font-family: 'Inter', system-ui, sans-serif; }
+  .display { font-family: 'Space Grotesk', monospace; }
+  
+  .calc-btn {
+    position: relative; overflow: hidden;
+    transition: all 0.12s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  .calc-btn:active { transform: scale(0.92); }
+  
+  .ripple {
+    position: absolute; border-radius: 50%;
+    background: rgba(212, 175, 55, 0.55);
+    transform: scale(0); animation: ripple-anim 0.55s linear forwards;
+    pointer-events: none;
+  }
+  @keyframes ripple-anim { to { transform: scale(4); opacity: 0; } }
+  
+  .flash { animation: flash-anim 0.3s ease; }
+  @keyframes flash-anim {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.06); color: #fcd34d; }
+    100% { transform: scale(1); }
+  }
+  .shake { animation: shake-anim 0.45s ease; }
+  @keyframes shake-anim {
+    0%,100% { transform: translateX(0); }
+    20%,60% { transform: translateX(-6px); }
+    40%,80% { transform: translateX(6px); }
+  }
+</style>
+</head>
+<body class="bg-zinc-950 flex items-center justify-center min-h-screen p-4">
+  <div class="w-full max-w-[380px]">
+    <div class="flex items-center gap-2 mb-4 px-1">
+      <div class="w-9 h-9 bg-gradient-to-br from-amber-400 to-yellow-500 rounded-2xl flex items-center justify-center text-zinc-950 font-bold text-2xl">G</div>
+      <div>
+        <h1 class="text-3xl font-semibold tracking-tighter text-white">Grok Luxe</h1>
+        <p class="text-xs text-amber-400/70 -mt-1">ULTIMATE EDITION</p>
+      </div>
+    </div>
+
+    <div class="relative bg-zinc-900/90 backdrop-blur-2xl border border-amber-900/30 rounded-3xl p-6 shadow-2xl">
+      <canvas id="particles" class="absolute inset-0 rounded-3xl pointer-events-none z-0"></canvas>
+      
+      <div id="display" class="display relative z-10 h-28 flex items-end justify-end px-6 text-6xl font-semibold tracking-[-3px] bg-zinc-950/80 rounded-2xl border border-white/10 mb-8 text-white overflow-hidden">
+        0
+      </div>
+
+      <div class="relative z-10 grid grid-cols-4 gap-3 text-center">
+        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xl py-6 rounded-2xl" data-action="clear">AC</button>
+        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xl py-6 rounded-2xl" data-action="sign">±</button>
+        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xl py-6 rounded-2xl" data-action="percent">%</button>
+        <button class="calc-btn bg-amber-950/70 hover:bg-amber-900 text-amber-400 text-3xl py-6 rounded-2xl" data-operator="/">÷</button>
+
+        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 text-white text-3xl py-6 rounded-2xl" data-value="7">7</button>
+        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 text-white text-3xl py-6 rounded-2xl" data-value="8">8</button>
+        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 text-white text-3xl py-6 rounded-2xl" data-value="9">9</button>
+        <button class="calc-btn bg-amber-950/70 hover:bg-amber-900 text-amber-400 text-3xl py-6 rounded-2xl" data-operator="*">×</button>
+
+        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 text-white text-3xl py-6 rounded-2xl" data-value="4">4</button>
+        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 text-white text-3xl py-6 rounded-2xl" data-value="5">5</button>
+        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 text-white text-3xl py-6 rounded-2xl" data-value="6">6</button>
+        <button class="calc-btn bg-amber-950/70 hover:bg-amber-900 text-amber-400 text-3xl py-6 rounded-2xl" data-operator="-">−</button>
+
+        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 text-white text-3xl py-6 rounded-2xl" data-value="1">1</button>
+        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 text-white text-3xl py-6 rounded-2xl" data-value="2">2</button>
+        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 text-white text-3xl py-6 rounded-2xl" data-value="3">3</button>
+        <button class="calc-btn bg-amber-950/70 hover:bg-amber-900 text-amber-400 text-3xl py-6 rounded-2xl" data-operator="+">+</button>
+
+        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 text-white text-3xl py-6 rounded-2xl col-span-2" data-value="0">0</button>
+        <button class="calc-btn bg-zinc-800 hover:bg-zinc-700 text-white text-3xl py-6 rounded-2xl" data-value=".">.</button>
+        <button class="calc-btn bg-gradient-to-br from-amber-400 to-yellow-500 hover:from-amber-300 text-zinc-950 text-3xl font-bold py-6 rounded-2xl" data-action="equals">=</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+// 状態
+let displayValue = '0';
+let firstOperand = null;
+let waitingForSecondOperand = false;
+let currentOperator = null;
+const display = document.getElementById('display');
+
+// 更新
+function updateDisplay() {
+  display.textContent = displayValue.length > 12 ? displayValue.slice(0,12) : displayValue;
+}
+
+// 数字入力
+function inputDigit(digit) {
+  if (waitingForSecondOperand) {
+    displayValue = digit;
+    waitingForSecondOperand = false;
+  } else {
+    displayValue = displayValue === '0' ? digit : displayValue + digit;
+  }
+  updateDisplay();
+}
+
+// 小数点
+function inputDecimal() {
+  if (waitingForSecondOperand) {
+    displayValue = '0.';
+    waitingForSecondOperand = false;
+  } else if (!displayValue.includes('.')) {
+    displayValue += '.';
+  }
+  updateDisplay();
+}
+
+// 演算子
+function handleOperator(operator) {
+  const inputValue = parseFloat(displayValue);
+  if (currentOperator && waitingForSecondOperand) {
+    currentOperator = operator;
+    return;
+  }
+  if (firstOperand === null) {
+    firstOperand = inputValue;
+  } else if (currentOperator) {
+    const result = calculate(firstOperand, inputValue, currentOperator);
+    displayValue = result === 'Error' ? 'Error' : parseFloat(result.toFixed(8)).toString();
+    firstOperand = result === 'Error' ? null : result;
+    updateDisplay();
+    if (result === 'Error') {
+      display.classList.add('shake');
+      setTimeout(() => display.classList.remove('shake'), 500);
+    }
+  }
+  waitingForSecondOperand = true;
+  currentOperator = operator;
+}
+
+// 計算実行
+function calculate(first, second, operator) {
+  switch(operator) {
+    case '+': return first + second;
+    case '-': return first - second;
+    case '*': return first * second;
+    case '/': return second === 0 ? 'Error' : first / second;
+    default: return second;
+  }
+}
+
+// =
+function handleEquals() {
+  if (!currentOperator || waitingForSecondOperand) return;
+  const inputValue = parseFloat(displayValue);
+  let result = calculate(firstOperand, inputValue, currentOperator);
+  if (result === 'Error') {
+    displayValue = 'Error';
+    display.classList.add('shake');
+    setTimeout(() => display.classList.remove('shake'), 500);
+  } else {
+    displayValue = parseFloat(result.toFixed(8)).toString();
+    display.classList.add('flash');
+    setTimeout(() => display.classList.remove('flash'), 300);
+  }
+  firstOperand = null;
+  currentOperator = null;
+  waitingForSecondOperand = true;
+  updateDisplay();
+}
+
+// リセット
+function reset() {
+  displayValue = '0';
+  firstOperand = null;
+  waitingForSecondOperand = false;
+  currentOperator = null;
+  updateDisplay();
+}
+
+// ±
+function toggleSign() {
+  if (displayValue !== '0' && displayValue !== 'Error') {
+    displayValue = displayValue.startsWith('-') ? displayValue.slice(1) : '-' + displayValue;
+    updateDisplay();
+  }
+}
+
+// %
+function percent() {
+  displayValue = (parseFloat(displayValue) / 100).toString();
+  updateDisplay();
+}
+
+// リップル
+function createRipple(e) {
+  const btn = e.currentTarget;
+  const ripple = document.createElement('span');
+  ripple.classList.add('ripple');
+  const rect = btn.getBoundingClientRect();
+  const size = Math.max(rect.width, rect.height);
+  ripple.style.width = ripple.style.height = size + 'px';
+  ripple.style.left = (e.clientX - rect.left - size/2) + 'px';
+  ripple.style.top = (e.clientY - rect.top - size/2) + 'px';
+  btn.appendChild(ripple);
+  setTimeout(() => ripple.remove(), 600);
+}
+
+// クリック音
+function playSound(isEquals = false) {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = isEquals ? 'sine' : 'triangle';
+    osc.frequency.value = isEquals ? 650 : 880;
+    gain.gain.value = isEquals ? 0.15 : 0.08;
+    osc.connect(gain).connect(ctx.destination);
+    osc.start();
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + (isEquals ? 0.25 : 0.1));
+    setTimeout(() => osc.stop(), 300);
+  } catch(e) {}
+}
+
+// パーティクル
+let canvas, ctx, particles = [];
+function initParticles() {
+  canvas = document.getElementById('particles');
+  ctx = canvas.getContext('2d');
+  const resize = () => {
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+  };
+  resize();
+  window.addEventListener('resize', resize);
+  
+  particles = Array.from({length: 26}, () => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    size: Math.random() * 2 + 0.8,
+    vx: (Math.random() - 0.5) * 0.3,
+    vy: (Math.random() - 0.5) * 0.3,
+    alpha: Math.random() * 0.5 + 0.3
+  }));
+}
+function drawParticles() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#fcd34d';
+  for (let p of particles) {
+    ctx.globalAlpha = p.alpha;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+    ctx.fill();
+    
+    p.x += p.vx;
+    p.y += p.vy;
+    if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+    if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+  }
+  ctx.globalAlpha = 1;
+  requestAnimationFrame(drawParticles);
+}
+
+// ボタン設定
+function setup() {
+  document.querySelectorAll('.calc-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      playSound(btn.dataset.action === 'equals');
+      createRipple(e);
+      
+      if (btn.dataset.value) {
+        if (btn.dataset.value === '.') inputDecimal();
+        else inputDigit(btn.dataset.value);
+      } else if (btn.dataset.operator) {
+        handleOperator(btn.dataset.operator);
+      } else if (btn.dataset.action) {
+        const act = btn.dataset.action;
+        if (act === 'clear') reset();
+        if (act === 'sign') toggleSign();
+        if (act === 'percent') percent();
+        if (act === 'equals') handleEquals();
+      }
+    });
+  });
+  
+  // キーボード
+  document.addEventListener('keydown', e => {
+    if ('0123456789'.includes(e.key)) inputDigit(e.key);
+    if (e.key === '.') inputDecimal();
+    if (['+','-','*','/'].includes(e.key)) handleOperator(e.key);
+    if (e.key === 'Enter' || e.key === '=') handleEquals();
+    if (e.key === 'Escape') reset();
+    if (e.key === '%') percent();
+  });
+}
+
+// 起動
+function init() {
+  initParticles();
+  drawParticles();
+  setup();
+  updateDisplay();
+}
+init();
+</script>
+</body>
+</html>
