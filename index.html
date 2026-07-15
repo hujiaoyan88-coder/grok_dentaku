@@ -12,27 +12,37 @@
   .calc-btn {
     position: relative; overflow: hidden;
     transition: all 0.1s cubic-bezier(0.23,1,0.32,1);
-    backdrop-filter: blur(12px);
+    backdrop-filter: blur(16px);
+    box-shadow: 0 0 15px rgba(103, 232, 249, 0.4);
+  }
+  .calc-btn:hover, .calc-btn:active {
+    box-shadow: 0 0 30px rgba(103, 232, 249, 0.8);
   }
   .calc-btn:active {
     transform: scale(0.88);
-    backdrop-filter: blur(20px);
-    box-shadow: 0 0 25px rgba(103, 232, 249, 0.6);
+    backdrop-filter: blur(24px);
   }
   
-  .ripple {
+  /* ぐるぐる光る円 */
+  .glow-circle {
     position: absolute; border-radius: 50%;
-    background: rgba(103, 232, 249, 0.75);
-    animation: ripple-boom 0.55s linear forwards;
+    border: 3px solid rgba(103, 232, 249, 0.9);
+    box-shadow: 0 0 20px rgba(103, 232, 249, 1),
+                inset 0 0 15px rgba(103, 232, 249, 0.6);
+    animation: glow-spin 0.65s linear forwards;
     pointer-events: none;
-    z-index: 40;
+    z-index: 50;
   }
-  @keyframes ripple-boom { to { transform: scale(4.8); opacity: 0; } }
+  @keyframes glow-spin {
+    0% { transform: scale(0.2) rotate(0deg); opacity: 0.9; }
+    50% { opacity: 0.7; }
+    100% { transform: scale(4.5) rotate(180deg); opacity: 0; }
+  }
   
   .big-flash { animation: big-flash-anim 0.45s ease; }
   @keyframes big-flash-anim {
     0% { filter: brightness(1); }
-    30% { filter: brightness(3.8) saturate(2.8); }
+    30% { filter: brightness(4) saturate(3); }
     100% { filter: brightness(1); }
   }
   
@@ -58,12 +68,11 @@
       </div>
     </div>
 
-    <div class="relative bg-zinc-900/90 backdrop-blur-2xl border border-cyan-400/40 rounded-3xl p-5 shadow-2xl">
-      <!-- 最前面パーティクル -->
+    <div class="relative bg-zinc-900/90 backdrop-blur-2xl border border-cyan-400/40 rounded-3xl p-5 shadow-2xl shadow-cyan-400/20">
       <canvas id="particles" class="absolute inset-0 rounded-3xl pointer-events-none z-50"></canvas>
       
       <div id="display" 
-           class="display relative z-10 h-24 flex items-end justify-end px-6 text-right text-5xl font-black tracking-[-3px] bg-black/60 backdrop-blur-xl rounded-2xl border border-cyan-400/30 mb-6 text-white">
+           class="display relative z-10 h-24 flex items-end justify-end px-6 text-right text-5xl font-black tracking-[-3px] bg-black/60 backdrop-blur-xl rounded-2xl border border-cyan-400/30 mb-6 text-white shadow-[0_0_25px_rgba(103,232,249,0.3)]">
         0
       </div>
 
@@ -90,13 +99,13 @@
 
         <button class="calc-btn bg-zinc-800/80 hover:bg-zinc-700/80 text-white text-3xl py-5 rounded-2xl border border-white/10 col-span-2" data-value="0">0</button>
         <button class="calc-btn bg-zinc-800/80 hover:bg-zinc-700/80 text-white text-3xl py-5 rounded-2xl border border-white/10" data-value=".">.</button>
-        <button class="calc-btn bg-gradient-to-br from-cyan-400 to-sky-400 text-zinc-950 text-4xl font-black py-5 rounded-2xl shadow-[0_0_25px_#67e8f9] border border-cyan-300" data-action="equals">=</button>
+        <button class="calc-btn bg-gradient-to-br from-cyan-400 to-sky-400 text-zinc-950 text-4xl font-black py-5 rounded-2xl shadow-[0_0_30px_#67e8f9] border border-cyan-300" data-action="equals">=</button>
       </div>
     </div>
   </div>
 
 <script>
-// パーティクル（z-50で最前面）
+// パーティクル（最前面）
 let canvas, ctx, particles = [];
 function initParticles() {
   canvas = document.getElementById('particles');
@@ -140,7 +149,7 @@ function bigBoomShake() {
   setTimeout(() => c.classList.remove('earthquake'), 600);
 }
 
-// ロジック（前回と同じ）
+// ロジック（省略せず）
 let displayValue = '0', firstOperand = null, waitingForSecondOperand = false, currentOperator = null;
 const display = document.getElementById('display');
 function updateDisplay() { display.textContent = displayValue; }
@@ -199,21 +208,26 @@ function toggleSign() {
 }
 function percent() { displayValue = (parseFloat(displayValue)/100).toString(); updateDisplay(); }
 
+// ぐるぐる光る円
+function createGlowCircle(e, btn) {
+  const r = btn.getBoundingClientRect();
+  const circle = document.createElement('div');
+  circle.classList.add('glow-circle');
+  const size = Math.max(r.width, r.height) * 0.8;
+  circle.style.width = circle.style.height = `${size}px`;
+  circle.style.left = `${e.clientX - r.left - size/2}px`;
+  circle.style.top = `${e.clientY - r.top - size/2}px`;
+  btn.appendChild(circle);
+  setTimeout(() => circle.remove(), 700);
+}
+
 // ボタン
 function setupButtons() {
   document.querySelectorAll('.calc-btn').forEach(btn => {
     btn.addEventListener('click', e => {
-      const r = btn.getBoundingClientRect();
-      createExplosion(r.left + r.width/2, r.top + r.height/2, 28, 4.5);
-      
-      const ripple = document.createElement('span');
-      ripple.classList.add('ripple');
-      const size = Math.max(r.width, r.height) * 1.3;
-      ripple.style.width = ripple.style.height = `${size}px`;
-      ripple.style.left = `${e.clientX - r.left - size/2}px`;
-      ripple.style.top = `${e.clientY - r.top - size/2}px`;
-      btn.appendChild(ripple);
-      setTimeout(() => ripple.remove(), 600);
+      createGlowCircle(e, btn);  // ぐるぐる光る円
+      const rect = btn.getBoundingClientRect();
+      createExplosion(rect.left + rect.width/2, rect.top + rect.height/2, 28, 4.5);
       
       if (btn.dataset.value) {
         if (btn.dataset.value === '.') inputDecimal();
